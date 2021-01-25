@@ -17,7 +17,7 @@ plugins:
 header_pages:
   - index.md
   - about.md
-  - HTB/htb.md
+  - htb/htb.md
   - ctf.md
   - projects.md
 font-size: large
