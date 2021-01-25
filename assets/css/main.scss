@@ -58,6 +58,12 @@ ul :not(.menu) > ul > li:before { content: "*";  margin-right: 9px; }
 .menu ul li.page_title { text-align: left; margin-left: 10px; float: left; font-weight: bold; color: var(--main-color) }
 
 
+/* CATEGORIES */
+.column { float: left; width: 33.33%; }
+.row:after { content: ""; display: table; clear: both; }
+.boxes {margin: auto; width: 90%; }
+
+
 /* ERROR PAGES */
 
 div.error_box { margin: 100px; text-align: center; }
