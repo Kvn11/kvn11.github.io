@@ -20,7 +20,8 @@
 }
 
 /* BASE */
-body { background-color: var(--bg-color); color: var(--main-color); font-family: 'Roboto Mono', monospace; margin: 0 auto; width: 90%; max-width: 700px; line-height: 2em; font-size: 0.9em; }
+pre { overflow-x: auto; }
+body { background-color: var(--bg-color); color: var(--main-color); font-family: 'Roboto Mono', monospace; margin: 0 auto; width: 90%; max-width: 900px; line-height: 2em; font-size: 0.9em; }
 h1, h2, h3, h4, h5, h6 {  margin: 0px;  margin-top: 22px;  font-weight: bold;  color: var(--pop-color); font-size: 1em; }
 p, ul, ol { font-size: 1em;  color: var(--text-color); }
 a { text-decoration: underline;  color: var(--alt-color); }
@@ -39,7 +40,7 @@ footer { color: var(--text-color);  border-top: dashed 1px rgba(219, 219, 219, 0
 header { margin-top: 25px;  margin-bottom: 10px; }
 header p { text-align: left;  margin: 0; }
 footer { margin-bottom: 20px; }
-img {max-width: 700px; }
+img {max-width: 900px; }
 img.home_header { width: 100%; margin-top: 5%; margin-bottom: 5%; }
 img.detail_header { width: 100%; }
 
