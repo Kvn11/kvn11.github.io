@@ -5,7 +5,7 @@
 layout: home
 permalink: /
 permalink_name: /home
-title: Kevin's Home Page
+title: Welcome!
 detail_image: assets/site_logo.png
 ---
 
