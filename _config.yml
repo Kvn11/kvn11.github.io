@@ -18,6 +18,6 @@ header_pages:
   - index.md
   - about.md
   - htb/htb.md
-  - ctf.md
+  - ctfs.md
   - projects.md
 font-size: large
