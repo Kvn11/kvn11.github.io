@@ -14,35 +14,35 @@ The initial nmap scan reveals that there are 3 ports open:
 ```
 I was unsuccessful in researching what program runs on this port in my OSINT so I headed over to the box site, http://10.10.10.222. Clicking around on the site brings us to the contact us page which shows:
 
-![image1.png](assets/images/delivery/image1.png)
+![image1.png](/assets/images/delivery/image1.png)
 
 From this page, we can also see the domain: delivery.htb, which we should add to our /etc/hosts file. Additionally, we can now deduce that the service runing on port 8065 is a MatterMost server.
 
 Heading over to helpdesk.delivery.htb shows us a system for creating support tickets. I attempt to open a new ticket to see what the process is like and if there are any potential attack vectors.
 
-![image2.png](assets/images/delivery/image2.png)
+![image2.png](/assets/images/delivery/image2.png)
 
 The inputs get sanitized so I wasn't able to perform injecion of PHP code, and SQL injection didn't work either. After filling out the form with fake/nonsense information, we are shown the following message:
 
-![image3.png](assets/images/delivery/image3.png)
+![image3.png](/assets/images/delivery/image3.png)
 
 This is interesting because it would seem that any message emailed to that support account will be printed in our support thread. This an important detail to note. Since I was not able to find any other attack vectors, let us see what else we can find. Checking out the sign in page leads us to an agent sign-in link, which in turn takes us to the OSTicket log in portal. I tried SQL injection again but no luck.
 
-![image4.png](assets/images/delivery/image4.png)
+![image4.png](/assets/images/delivery/image4.png)
 
 Now lets check out the MatterMost server. It also greets us with a log in page, but we have the ability to create a new account, or reset a password. From the homepage of delivery.htb, we know that we need an address with the domain of @delivery.htb in order to access this content. 
 
-![image5.png](assets/images/delivery/image5.png)
+![image5.png](/assets/images/delivery/image5.png)
 
 # Getting User
 
 My first thought was that since we already know of a @delivery.htb address (the one given to us after making a support ticket) then we could potentially request a password reset using that email on the MatterMost server, and then we will receive the link in the support thread, and BOOM. However, this did not work. So my next step was try to use the email account to sign up on MatterMost. 
 
-![image6.png](assets/images/delivery/image6.png)
+![image6.png](/assets/images/delivery/image6.png)
 
 It worked! After we log into the server we find a message channel with credentials to the OSTicket server and a hint as to what the password of root might be.
 
-![image7.png](assets/images/delivery/image7.png)
+![image7.png](/assets/images/delivery/image7.png)
 
 Lets log into the server with the provided credentials and capture the user flag.
 
@@ -76,7 +76,7 @@ def test(a1, a2):
 
 From the message in the MatterMost channel, we can assume that we are now looking for hashes that contain the root password. I went back to the OSTicket login portal to try and obtain to clues about where to look. Fortunately, I found a lot.
 
-![image8.png](assets/images/delivery/image8.png)
+![image8.png](/assets/images/delivery/image8.png)
 
 My next objective is find a MySQL database that might contain password hashes. I start by running the following command to locate where the MatterMost files are stored.
 ```
@@ -88,7 +88,7 @@ maildeliverer@Delivery:~$
 ```
 I do not have sufficient permissions to access the last directory in the list. I decide to check out the first directory, /opt/mattermost. There I find a config directory with a config.json file inside. We are given a user and password to access the SQL database.
 
-![image9.png](assets/images/delivery/image9.png)
+![image9.png](/assets/images/delivery/image9.png)
 
 ```
 maildeliverer@Delivery:~$ mysql -u mmuser -p
@@ -121,7 +121,7 @@ MariaDB [mattermost]>
 
 Exploring the mattermost db reveals a Users table that contains username and password data. Most importantly, we get the root hash:
 
-![image10.png](assets/images/delivery/image10.png)
+![image10.png](/assets/images/delivery/image10.png)
 
 root: $2a$10$VM6EeymRxJ29r8Wjkr8Dtev0O.1STWb4.4ScG.anuu7v0EFJwgjjO
 
