@@ -64,13 +64,6 @@ maildeliverer@Delivery:~$ cat user.txt
 c90e841382f400b84697616bb877a272
 maildeliverer@Delivery:~$
 ```
-# Python
-``` python
-def test(a1, a2):
-  for i in range(1, 3):
-    print(i)
-
-```
 
 # Getting Root
 
