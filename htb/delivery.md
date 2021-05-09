@@ -65,6 +65,13 @@ c90e841382f400b84697616bb877a272
 maildeliverer@Delivery:~$
 ```
 
+``` python
+def test(a1, a2):
+  for i in range(1, 3):
+    print(i)
+
+```
+
 # Getting Root
 
 From the message in the MatterMost channel, we can assume that we are now looking for hashes that contain the root password. I went back to the OSTicket login portal to try and obtain to clues about where to look. Fortunately, I found a lot.
