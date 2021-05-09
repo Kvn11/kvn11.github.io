@@ -2,6 +2,18 @@
 layout: default
 ---
 
-{%- if page.detail_image -%}<img class="home_header" src="{{ page.detail_image }}">{%- endif -%}
+<div class="home">
 
-{{ content }}
+  {{ content }}
+
+  <ul class="post-list">
+    {% for post in site.posts %}
+      <li>
+        <h2>
+          <a class="post-link" href="{{ post.url | relative_url }}">{{ post.title | escape }}</a>
+        </h2>
+      </li>
+    {% endfor %}
+  </ul>
+
+</div>
