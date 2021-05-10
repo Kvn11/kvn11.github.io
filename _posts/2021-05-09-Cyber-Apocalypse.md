@@ -69,31 +69,27 @@ However, this time what we read doesn't matter.
 We need to set the RAX register to the sigret system call `0xf` or 15 in decimal.
 Since we have no gadgets available for this, we must utilize the return value of the read() function. According to the linux man page:
 
-<em>
-"
-On success, the number of bytes read is returned (zero indicates
-end of file), and the file position is advanced by this number.
-It is not an error if this number is smaller than the number of
-bytes requested; this may happen for example because fewer bytes
-are actually available right now (maybe because we were close to
-end-of-file, or because we are reading from a pipe, or from a
-terminal), or because read() was interrupted by a signal.  See
-also NOTES.
-On error, -1 is returned, and errno is set to indicate the error.
-In this case, it is left unspecified whether the file position
-(if any) changes.On success, the number of bytes read is returned (zero indicates
-end of file), and the file position is advanced by this number.
-It is not an error if this number is smaller than the number of
-bytes requested; this may happen for example because fewer bytes
-are actually available right now (maybe because we were close to
-end-of-file, or because we are reading from a pipe, or from a
-terminal), or because read() was interrupted by a signal.  See
-also NOTES.
-On error, -1 is returned, and errno is set to indicate the error.
-In this case, it is left unspecified whether the file position
-(if any) changes.
-"
-</em>
+> On success, the number of bytes read is returned (zero indicates
+> end of file), and the file position is advanced by this number.
+> It is not an error if this number is smaller than the number of
+> bytes requested; this may happen for example because fewer bytes
+> are actually available right now (maybe because we were close to
+> end-of-file, or because we are reading from a pipe, or from a
+> terminal), or because read() was interrupted by a signal.  See
+> also NOTES.
+> On error, -1 is returned, and errno is set to indicate the error.
+> In this case, it is left unspecified whether the file position
+> (if any) changes.On success, the number of bytes read is returned (zero indicates
+> end of file), and the file position is advanced by this number.
+> It is not an error if this number is smaller than the number of
+> bytes requested; this may happen for example because fewer bytes
+> are actually available right now (maybe because we were close to
+> end-of-file, or because we are reading from a pipe, or from a
+> terminal), or because read() was interrupted by a signal.  See
+> also NOTES.
+> On error, -1 is returned, and errno is set to indicate the error.
+> In this case, it is left unspecified whether the file position
+> (if any) changes.
 
 Basically, if we send the program 15 bytes, then we set the RAX register with our desired value and thus we are able to call the sigret.
 And that's what the third part of the payload allows us to do.
@@ -175,4 +171,50 @@ io.send("E" * 15)
 sleep(2)
 
 io.interactive()
+```  
+  
+  
+# Minefield
+
+Running the program through GDB shows that we have the ability to write to some addresses, and we also note that there is no memory randomization.
+There is a stack canary, so my first thought was that this was not going to be a buffer overflow.
+
+![Ghidra Result](/assets/images/cy_ap/minefield1.png "Ghidra Result")
+
+If we run the binary we see that it asks for input, and since we do not know what input it expects, it eventually ends in a segmentation fault.
+
+![Behaviour](/assets/images/cy_ap/minefield2.png "Segfault")
+
+Ghidra reveals that there is a win function titled `_()` which calls the `cat flag*` command on the system running the binary.
+
+![win function](/assets/images/cy_ap/minefield3.png "win function")
+
+If we follow along the functions being called, we end up at the `mission()` function, where were are presented with the choice where to plant a bomb and the type of bomb.
+
+![mission](/assets/images/cy_ap/minefield5.png "mission")
+
+Here is it important to note that our choices are saved to buffers of length 10, so our input must reflect that.
+Another important action is that our input string gets converted from a character type to an unsigned long long.
+Lastly we notice the vulnerability in this program.
+On line 25 we have the code:
+
+```C
+*puVar1 = uVar2;
 ```
+`puVar1` contains the string converted to an unsigned long long that we inputted when we were asked to insert the type of mine.
+`uVar2` contains the string converted to an unsigned long long that we inputted when we were asked the location.
+That line of code is overwriting the value found at the type of mine, with the location we inputted.
+The next line after this simply checks the stack canary, and then exits the function.
+If we search through the addresses that we can write to, we find the `.fini_array` entry.
+
+![fini_array](/assets/images/cy_ap/minefield4.png "fini array")
+
+This pointer contains the address of the functions that will begin the process of exiting out of the program.
+Therefore, we can overwrite this entry so that instead of exiting, the program instead enters the win function.
+Since this is such a simple exploitation there is no need to write an exploit.
+It is faster to simply type in the values mentioned above.
+
+![win](/assets/images/cy_ap/minefield7.png "win")
+
+# Controller
+
